@@ -1,0 +1,113 @@
+# Define a function to get the graph from the user
+def get_graph():
+    # Initialize an empty dictionary to store the graph
+    graph = {}
+    # Get the number of nodes in the graph
+    n = int(input("Enter the number of nodes in the graph: "))
+    # Loop through each node
+    for i in range(n):
+        # Get the name of the node
+        node = input(f"Enter the name of node {i+1}: ")
+        # Get the number of neighbors of the node
+        m = int(input(f"Enter the number of neighbors of node {node}: "))
+        # Initialize an empty list to store the neighbors and costs
+        neighbors = []
+        # Loop through each neighbor
+        for j in range(m):
+            # Get the name and cost of the neighbor
+            neighbor, cost = input(f"Enter the name and cost of neighbor {j+1} of node {node}: ").split()
+            # Convert the cost to an integer
+            cost = int(cost)
+            # Append the neighbor and cost as a tuple to the list
+            neighbors.append((neighbor, cost))
+        # Add the node and its neighbors to the graph dictionary
+        graph[node] = neighbors
+    # Return the graph
+    return graph
+
+# Define a function to get the start and goal nodes from the user
+def get_start_goal():
+    # Get the start node from the user
+    start = input("Enter the start node: ")
+    # Get the goal node from the user
+    goal = input("Enter the goal node: ")
+    # Return the start and goal nodes as a tuple
+    return (start, goal)
+
+# Define a function to implement uniform cost search algorithm
+def uniform_cost_search(graph, start, goal):
+    # Initialize an empty list to store the visited nodes
+    visited = []
+    # Initialize a priority queue to store the nodes and their costs
+    queue = []
+    # Initialize a dictionary to store the parent nodes
+    parent = {}
+    # Add the start node and its cost (zero) to the queue
+    queue.append((start, 0))
+    # Loop until the queue is empty or the goal is found
+    while queue:
+        # Pop the node with the lowest cost from the queue
+        node, cost = queue.pop(0)
+        # Check if the node is the goal
+        if node == goal:
+            # Return the cost and parent dictionary
+            return (cost, parent)
+        # Check if the node is not visited
+        if node not in visited:
+            # Mark it as visited
+            visited.append(node)
+            # Loop through each neighbor and its cost of the node
+            for neighbor, c in graph[node]:
+                # Check if the neighbor is not visited
+                if neighbor not in visited:
+                    # Add it to the queue with its updated cost
+                    queue.append((neighbor, cost + c))
+                    # Update its parent node
+                    parent[neighbor] = node
+            # Sort the queue by cost in ascending order
+            queue.sort(key=lambda x: x[1])
+    # Return None if no path is found
+    return None
+
+# Define a function to print the path from start to goal using parent dictionary
+def print_path(parent, start, goal):
+    # Initialize an empty list to store the path
+    path = []
+    # Initialize a variable to store current node as goal node
+    current = goal
+    # Loop until current node is start node or None (no path)
+    while current != start and current != None:
+        # Insert current node at beginning of path list
+        path.insert(0, current)
+        # Update current node as its parent node
+        current = parent.get(current)
+    # Check if current node is start node
+    if current == start:
+        # Insert start node at beginning of path list
+        path.insert(0, start)
+        # Print path list as a string
+        print(" -> ".join(path))
+    else:
+        # Print no path message
+        print("No path found")
+
+# Main program
+# Get graph from user
+graph = get_graph()
+# Get start and goal nodes from user
+start, goal = get_start_goal()
+# Perform uniform cost search algorithm
+result = uniform_cost_search(graph, start, goal)
+# Check if result is not None
+if result:
+    # Unpack the result into cost and parent
+    cost, parent = result
+    # Print the cost
+    print(f"Cost: {cost}")
+    # Print the path
+    print("Path: ", end="")
+    print_path(parent, start, goal)
+else:
+    # Print no path message
+    print("No path found")
+
